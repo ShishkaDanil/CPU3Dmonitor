@@ -11,7 +11,11 @@ import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.animation import FuncAnimation
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-import winreg
+
+# Определяем операционную систему
+import platform
+if platform.system() == "Windows":
+    import winreg
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -106,17 +110,18 @@ class MainWindow(QMainWindow):
         self.ax.set_yticklabels([f'{round(float(t), 2)}%' for t in np.linspace(min(self.memory_data), max(self.memory_data), num=6)], fontsize=8, rotation=45)
 
 def add_to_startup():
-    # Получаем путь к текущему исполняемому файлу
-    exe_path = os.path.abspath(sys.argv[0])
-    # Имя ключа в реестре
-    key_name = "CPU3Dmonitor"
-    # Открываем ключ реестра для автозапуска
-    key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
-                        r"Software\Microsoft\Windows\CurrentVersion\Run",
-                        0, winreg.KEY_SET_VALUE)
-    # Добавляем путь к исполняемому файлу
-    winreg.SetValueEx(key, key_name, 0, winreg.REG_SZ, exe_path)
-    key.Close()
+    if platform.system() == "Windows":
+        # Получаем путь к текущему исполняемому файлу
+        exe_path = os.path.abspath(sys.argv[0])
+        # Имя ключа в реестре
+        key_name = "CPU3Dmonitor"
+        # Открываем ключ реестра для автозапуска
+        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
+                            r"Software\Microsoft\Windows\CurrentVersion\Run",
+                            0, winreg.KEY_SET_VALUE)
+        # Добавляем путь к исполняемому файлу
+        winreg.SetValueEx(key, key_name, 0, winreg.REG_SZ, exe_path)
+        key.Close()
 
 if __name__ == '__main__':
     add_to_startup()
